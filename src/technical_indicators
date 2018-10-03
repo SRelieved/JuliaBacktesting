@@ -1,3 +1,5 @@
+include("data.jl")
+
 function RSI(market::market) 
    position = length(market)
    if position < 15
