@@ -1,3 +1,5 @@
+include("technical_indicators.jl")
+
 struct mutable market
    asset::String
    data::Array
