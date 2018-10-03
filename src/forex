@@ -1,0 +1,153 @@
+struct mutable market
+   asset::String
+   data::Array
+   pipsvalue::Float64
+   market(asset, pipsvalue = nothing) = begin
+      asset = asset
+      data = []
+      if pipsvalue == nothing & "jpy" in asset
+         pipsvalue = 0.01
+      elseif pipsvalue == nothing & ("jpy" in asset) == FALSE
+         pipsvalue = 0.001
+      else
+         pipsvalue = pipsvalue
+      end
+   new(asset,data,pipsvalue)
+   end
+end
+
+ 
+
+
+struct trades
+   asset::String
+   entry::Float64
+   exit::Float64
+   type::String
+   pipsvalue::Float64
+   amount::Float64
+   resultpips::Float64
+   profit::Float64
+   trades(asset,entry,exit,type,amount) = begin
+      asset = asset
+      entry = entry
+      exit = exit
+      type = type
+      pipsvalue = asset.pipsvalue
+      amount = amount
+      if type == "Long"
+         result = exit - entry
+         profit = (result/pipsvalue)*amount
+      elseif type == "Short"
+         result = entry - exit
+         profit = (result/pipsvalue)*amount  
+      else
+         print("Invalid type of transaction, please enter a valid type of transaction!")
+      end
+   new(asset, entry, exit, type, pipsvalue, amount, resultpips, profit)
+   end
+end
+
+ 
+ 
+
+struct data <: market
+   Assetname::market
+   Date::Date
+   Open::Float64
+   Close::Float64
+   TimeFrame::String
+   RSI::Float64
+   MA52::Float64
+   MA26::Float64
+   MA12::Float64
+   MA9::Float64
+   MACD::Float64
+   asset(market, Date, Open, Close, TimeFrame) = begin
+      Assetname = market.asset
+      Date=Date
+      Open=Open
+      Close=Close
+      RangeCO = Close-Open
+      TimeFrame=TimeFrame
+      RSI = RSI(market)
+      MA52 = MA52(market)
+      MA26 = MA26(market)
+      MA12 = MA12(market)
+      MA9 = MA9(market)
+      MACD =  MACD(ma26,ma12,ma9)
+   new()
+   end
+end
+
+
+function RSI(market::market) 
+   position = length(market)
+   if position < 15
+      return "NA"
+   else      
+      data = market[position-14:position]
+      wins = []
+      losses = []
+      for i in data
+         if i.Close < i.Open
+            push!(losses,i)
+         elseif i.Close > i.Open
+            push!(losses,i)
+         end
+      end
+      winssum = sum(wins)/length(wins)
+      lossessum = sum(losses)/length(losses)
+      firstrs = winssums/lossessum
+      RSI = 100-(100/firstrs)
+      return RSI
+   end
+end
+   
+
+function MACD(ma26::Float64,ma12::Float64,ma9::Float64)
+   macdline = ma12 - ma26
+   signalline = ma9
+   macdhistogram = macdline - signalline
+   return macdhistogram
+end   
+
+function MA9(market::market)
+   position = length(market)
+   if position < 7
+      return "NA"
+   else
+      ma9 = sum(market.data.Close[position-9]:position)/9
+      return ma9
+   end
+end
+
+function MA12(market::market)
+   position = length(market)
+   if position < 13
+      return "NA"
+   else
+      ma12 = sum(market.data.Close[position-12]:position)/12
+      return ma12
+   end
+end
+
+function MA26(market::market)
+   position = length(market)
+   if position < 27
+      return "NA"
+   else
+      ma26 = sum(market.data.Close[position-26]:position)/26
+      return ma26
+   end
+end
+
+function MA52(market::market)
+   position = length(market)
+   if position < 53
+      return "NA"
+   else
+      ma52 = sum(market.data.Close[position-52]:position)/52
+      return ma52
+   end
+end     
