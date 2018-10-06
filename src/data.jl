@@ -86,11 +86,7 @@ struct data
       MA26M = MA26(Market)
       MA12M = MA12(Market)
       MA9M = MA9(Market)
-      if MA9M != "NA"
-         MACDM =  MACD(MA26M, MA12M, MA9M)
-      else
-         MACDM = 0.00
-      end
+      MACDM =  MACD(MA26M, MA12M, MA9M)
    new(Assetname, Date, Open, Close, TimeFrame, RSIM, MA52M, MA26M, MA12M, MA9M, MACDM)
    end
 end
