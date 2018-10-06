@@ -1,3 +1,6 @@
+include("data.jl")
+include("technical_indicators.jl")
+
 assets = []
 
 push!(assets, "USDJPY")
