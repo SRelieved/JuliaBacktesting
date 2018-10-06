@@ -1,24 +1,23 @@
 include("technical_indicators.jl")
 
-struct mutable market
+using Dates
+
+
+mutable struct market
    asset::String
    data::Array
    pipsvalue::Float64
-   market(asset, pipsvalue = nothing) = begin
+   market(asset, pipsvalue = 0.01) = begin
       asset = asset
       data = []
-      if pipsvalue == nothing & "jpy" in asset
-         pipsvalue = 0.01
-      elseif pipsvalue == nothing & ("jpy" in asset) == FALSE
-         pipsvalue = 0.001
-      else
+      if occursin("JPY", asset)
          pipsvalue = pipsvalue
+      else
+         pipsvalue = 0.0001
       end
    new(asset,data,pipsvalue)
    end
 end
-
- 
 
 
 struct trades
@@ -50,12 +49,10 @@ struct trades
    end
 end
 
- 
- 
 
-struct data <: market
-   Assetname::market
-   Date::Date
+struct data
+   Assetname::String
+   Date::DateTime
    Open::Float64
    Close::Float64
    TimeFrame::String
@@ -65,22 +62,56 @@ struct data <: market
    MA12::Float64
    MA9::Float64
    MACD::Float64
-   asset(market, Date, Open, Close, TimeFrame) = begin
-      Assetname = market.asset
-      Date=Date
-      Open=Open
-      Close=Close
-      RangeCO = Close-Open
-      TimeFrame=TimeFrame
-      RSI = RSI(market)
-      MA52 = MA52(market)
-      MA26 = MA26(market)
-      MA12 = MA12(market)
-      MA9 = MA9(market)
-      MACD =  MACD(ma26,ma12,ma9)
-   new()
+   data(Market::market, Close::Float64, TimeFrame::String, Date = nothing, Open = nothing) = begin
+      Assetname = Market.asset
+      if Date == nothing
+         Date = now()
+      else
+         Date = Date
+      end
+      if Open == nothing
+         len = length(Market.data)
+         if len > 0
+            Open = Market.data[len].Close
+         else
+            Open = 0.00
+         end
+      else
+         Open = Open
+      end
+      Close = Close
+      TimeFrame = TimeFrame
+      RSIM = RSI(Market)
+      MA52M = MA52(Market)
+      MA26M = MA26(Market)
+      MA12M = MA12(Market)
+      MA9M = MA9(Market)
+      if MA9M != "NA"
+         MACDM =  MACD(MA26M, MA12M, MA9M)
+      else
+         MACDM = 0.00
+      end
+   new(Assetname, Date, Open, Close, TimeFrame, RSIM, MA52M, MA26M, MA12M, MA9M, MACDM)
    end
 end
 
 
+function create_event(Market::market, Close::Float64, TimeFrame::String)
+   global assets
+   new_event = data(Market, Close , TimeFrame)      
+   for i in assets
+      if Market.asset == i
+         push!(Market.data, new_event)
+         break
+      end
+   end
+end
 
+
+function create_historic(Market::market, data::Array, lengthofhistoric::Int64, TimeFrame::String)
+   global assets
+   for i in collect(1:lengthofhistoric)
+      new_value = data[i]
+      create_event(Market, new_value, TimeFrame)
+   end
+end
