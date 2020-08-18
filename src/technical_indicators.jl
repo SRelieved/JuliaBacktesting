@@ -1,6 +1,28 @@
 include("data.jl")
 
 
+mutable struct supportsresistances
+   close::Float64
+   date::
+   timeframe::String
+   asset::String
+   regime::String
+   pos::String
+   supportsresistances(close, date, asset, timeframe) = begin
+      close = close
+      date = date
+      timeframe = timeframe.upper()
+      asset = asset
+      regime = asset.regime
+      pos = length(asset.data[timeframe])
+   new(close, date, asset, timeframe)
+   end
+end
+
+
+
+
+
 function RSI(Market::market) 
    position = length(Market.data)
    if position < 15
