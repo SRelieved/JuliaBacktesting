@@ -5,17 +5,25 @@ using Dates
 
 mutable struct market
    asset::String
-   data::Array
    pipsvalue::Float64
+   regime::Dict
+   active_trends::Dict
+   data::Dict
+   supports::Dict
+   resistances::Dict
    market(asset, pipsvalue = 0.01) = begin
       asset = asset
-      data = []
+      regime = Dict([("MONTHLY", []), ("WEEKLY", []), ("DAILY", []), ("4H", []), ("2H", []), ("1H", []), ("30MIN", []),("15MIN", []), ("5MIN", []), ("MINUTES", []), ("TICKS", [])])
+      active_trends = Dict([("MONTHLY", []), ("WEEKLY", []), ("DAILY", []), ("4H", []), ("2H", []), ("1H", []), ("30MIN", []),("15MIN", []), ("5MIN", []), ("MINUTES", []), ("TICKS", [])])
+      data = Dict([("MONTHLY", []), ("WEEKLY", []), ("DAILY", []), ("4H", []), ("2H", []), ("1H", []), ("30MIN", []),("15MIN", []), ("5MIN", []), ("MINUTES", []), ("TICKS", [])])
+      supports = Dict([("MONTHLY", []), ("WEEKLY", []), ("DAILY", []), ("4H", []), ("2H", []), ("1H", []), ("30MIN", []),("15MIN", []), ("5MIN", []), ("MINUTES", []), ("TICKS", [])])
+      resistances = Dict([("MONTHLY", []), ("WEEKLY", []), ("DAILY", []), ("4H", []), ("2H", []), ("1H", []), ("30MIN", []),("15MIN", []), ("5MIN", []), ("MINUTES", []), ("TICKS", [])])
       if occursin("JPY", asset)
          pipsvalue = pipsvalue
       else
          pipsvalue = 0.0001
       end
-   new(asset,data,pipsvalue)
+   new(asset,data,pipsvalue,regime,active_trends,supports,resistances)
    end
 end
 
