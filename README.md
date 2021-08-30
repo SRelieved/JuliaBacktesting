@@ -1,6 +1,6 @@
 # Backtesting
 
-Backtesting is a backtesting environment for finance coded in python.
+Backtesting is a backtesting environment for finance coded in Julia.
 
 It allows its users to import external market data within the environment, to create a trading strategies and to simulate the portfolio results.
 
